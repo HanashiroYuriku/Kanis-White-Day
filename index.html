@@ -33,6 +33,7 @@
         // audio setup
         const bgm = new Audio('darling.mp3'); 
         bgm.loop = true; 
+        bgm.preload = 'auto';
         let isMusicPlaying = false;
         
         const sequence = [
@@ -257,21 +258,26 @@
             requestAnimationFrame(animate);
         }
 
-        function handleUserInteraction() {
+        function handleUserInteraction(e) {
+            if (e && e.type === 'touchstart') {
+                e.preventDefault(); 
+            }
+
             if (!isMusicPlaying) {
-                // Beri tahu browser kalau kita nge-load audio dari interaksi user
-                bgm.load(); 
-                bgm.play().then(() => {
-                    isMusicPlaying = true;
-                }).catch(error => {
-                    console.log("Browser memblokir audio:", error);
-                });
+                let playPromise = bgm.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        isMusicPlaying = true;
+                    }).catch(error => {
+                        console.log("Audio tertahan browser:", error);
+                    });
+                }
             }
             triggerNextAnimation();
         }
 
-        // Pakai pointerdown agar berlaku universal untuk Mouse (laptop) & Sentuhan jari (HP)
-        window.addEventListener('pointerdown', handleUserInteraction);
+        window.addEventListener('click', handleUserInteraction);
+        window.addEventListener('touchstart', handleUserInteraction, {passive: false});
 
         animate();
     </script>
