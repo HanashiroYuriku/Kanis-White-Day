@@ -258,28 +258,27 @@
             requestAnimationFrame(animate);
         }
 
-        function handleUserInteraction(e) {
-            let currentTime = new Date().getTime();
-            let tapLength = currentTime - lastTap;
-            if (tapLength < 300 && tapLength > 0) return; 
-            lastTap = currentTime;
+        let lastInteraction = 0;
 
+        function handleUserInteraction() {
+            // 1. Eksekusi lagu
             if (!isMusicPlaying) {
                 let playPromise = bgm.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
                         isMusicPlaying = true;
-                    }).catch(error => {
-                        console.log("Audio tertahan:", error);
+                    }).catch(err => {
+                        console.log("Menunggu izin browser...", err);
                     });
                 }
             }
             
+            // 2. Majukan animasi
             triggerNextAnimation();
         }
 
+        // CUKUP PAKAI SATU INI SAJA. Paling aman, paling ampuh!
         window.addEventListener('click', handleUserInteraction);
-        window.addEventListener('touchstart', handleUserInteraction, { passive: true });
 
         animate();
     </script>
