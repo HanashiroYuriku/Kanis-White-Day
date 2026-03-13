@@ -259,17 +259,19 @@
 
         function handleUserInteraction() {
             if (!isMusicPlaying) {
-                bgm.play().catch(error => console.log("Audio autoplay blocked.", error));
-                isMusicPlaying = true;
+                // Beri tahu browser kalau kita nge-load audio dari interaksi user
+                bgm.load(); 
+                bgm.play().then(() => {
+                    isMusicPlaying = true;
+                }).catch(error => {
+                    console.log("Browser memblokir audio:", error);
+                });
             }
             triggerNextAnimation();
         }
 
-        window.addEventListener('click', handleUserInteraction);
-        window.addEventListener('touchstart', (e) => {
-            e.preventDefault(); 
-            handleUserInteraction();
-        }, {passive: false});
+        // Pakai pointerdown agar berlaku universal untuk Mouse (laptop) & Sentuhan jari (HP)
+        window.addEventListener('pointerdown', handleUserInteraction);
 
         animate();
     </script>
