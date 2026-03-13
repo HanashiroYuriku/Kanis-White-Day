@@ -259,9 +259,10 @@
         }
 
         function handleUserInteraction(e) {
-            if (e && e.type === 'touchstart') {
-                e.preventDefault(); 
-            }
+            let currentTime = new Date().getTime();
+            let tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) return; 
+            lastTap = currentTime;
 
             if (!isMusicPlaying) {
                 let playPromise = bgm.play();
@@ -269,15 +270,16 @@
                     playPromise.then(() => {
                         isMusicPlaying = true;
                     }).catch(error => {
-                        console.log("Audio tertahan browser:", error);
+                        console.log("Audio tertahan:", error);
                     });
                 }
             }
+            
             triggerNextAnimation();
         }
 
         window.addEventListener('click', handleUserInteraction);
-        window.addEventListener('touchstart', handleUserInteraction, {passive: false});
+        window.addEventListener('touchstart', handleUserInteraction, { passive: true });
 
         animate();
     </script>
